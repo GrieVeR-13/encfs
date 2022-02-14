@@ -5,6 +5,8 @@
 # FUSE_ROOT_DIR    - Additional search path.
 # FUSE_FOUND       - True if FUSE lib is found.
 
+SET (FUSE_INCLUDE_DIR ${FUSEFS_INCLUDE_PATH})
+
 # check if already in cache, be silent
 if (FUSE_INCLUDE_DIR AND FUSE_LIBRARIES)
     SET (FUSE_FIND_QUIETLY TRUE)

@@ -42,7 +42,7 @@
 #include "autosprintf.h"
 #include "config.h"
 #include "encfs.h"
-#include "fuse.h"
+#include "FuseEds.h"
 #include "i18n.h"
 #include "openssl.h"
 
@@ -619,7 +619,7 @@ void *encfs_init(fuse_conn_info *conn) {
   auto *ctx = (EncFS_Context *)fuse_get_context()->private_data;
 
   // set fuse connection options
-  conn->async_read = 1u;
+//  conn->async_read = 1u; //todoe
 
 #ifdef __CYGWIN__
   // WinFsp needs this to partially handle read-only FS
@@ -692,7 +692,7 @@ int main(int argc, char *argv[]) {
   // 0..
   memset(&encfs_oper, 0, sizeof(fuse_operations));
 
-  encfs_oper.getattr = encfs_getattr;
+  /*encfs_oper.getattr = encfs_getattr; //todoe
   encfs_oper.readlink = encfs_readlink;
   encfs_oper.readdir = encfs_readdir;
   encfs_oper.mknod = encfs_mknod;
@@ -730,7 +730,7 @@ int main(int argc, char *argv[]) {
   encfs_oper.fgetattr = encfs_fgetattr;
   // encfs_oper.lock = encfs_lock;
   encfs_oper.utimens = encfs_utimens;
-  // encfs_oper.bmap = encfs_bmap;
+  // encfs_oper.bmap = encfs_bmap;*/
 
   openssl_init(encfsArgs->isThreaded);
 
@@ -785,10 +785,10 @@ int main(int argc, char *argv[]) {
       time(&startTime);
 
       // fuse_main returns an error code in newer versions of fuse..
-      int res = fuse_main(encfsArgs->fuseArgc,
-                          const_cast<char **>(encfsArgs->fuseArgv), &encfs_oper,
-                          (void *)ctx.get());
-
+//      int res = fuse_main(encfsArgs->fuseArgc,
+//                          const_cast<char **>(encfsArgs->fuseArgv), &encfs_oper,
+//                          (void *)ctx.get());
+  int res = 0; //todoe
       time(&endTime);
 
       if (encfsArgs->opts->annotate) {

@@ -8,6 +8,10 @@ endif()
 
 project(EncFS C CXX)
 
+set(FUSE_INCLUDE_DIR ${FUSEFS_INCLUDE_PATH})
+set(FUSE_LIBRARIES fusefs)
+set(OPENSSL_LIBRARIES ssl crypto)
+
 set (ENCFS_MAJOR 1)
 set (ENCFS_MINOR 9)
 set (ENCFS_PATCH 5)
@@ -28,9 +32,9 @@ option (USE_INTERNAL_TINYXML "use built-in TinyXML2" ON)
 option (USE_INTERNAL_EASYLOGGING "use built-in Easylogging++" ON)
 option (BUILD_SHARED_LIBS "build internal libraries as shared" OFF)
 if (APPLE)
-  option (ENABLE_NLS "compile with Native Language Support (using gettext)" OFF)
+#  option (ENABLE_NLS "compile with Native Language Support (using gettext)" OFF)
 else()
-  option (ENABLE_NLS "compile with Native Language Support (using gettext)" ON)
+#  option (ENABLE_NLS "compile with Native Language Support (using gettext)" ON)
 endif()
 option (INSTALL_LIBENCFS "install libencfs" OFF)
 option (LINT "enable lint output" OFF)
@@ -99,9 +103,9 @@ if (CYGWIN)
 endif()
 
 # Check for FUSE.
-find_package (FUSE REQUIRED)
-include_directories (${FUSE_INCLUDE_DIR})
-add_definitions (-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=29)
+#find_package (FUSE REQUIRED)
+include_directories (${FUSEFS_INCLUDE_PATH})
+#add_definitions (-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=29)
 if (CYGWIN)
   # Cygwin build is intended to use WinFsp
   add_definitions(-DCYGFUSE)
@@ -112,7 +116,7 @@ if (APPLE AND NOT DEFINED OPENSSL_ROOT_DIR)
   # Search both Brew and Macports
   set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl;/opt/local")
 endif()
-find_package (OpenSSL REQUIRED)
+#find_package (OpenSSL REQUIRED)
 include_directories (${OPENSSL_INCLUDE_DIR})
 
 find_program (POD2MAN pod2man)
@@ -192,17 +196,17 @@ include_directories (${CMAKE_BINARY_DIR})
 include_directories (${CMAKE_CURRENT_LIST_DIR})
 
 # Translations
-if (ENABLE_NLS)
-  find_package (Intl)
-  if (Intl_FOUND)
-    include_directories (${Intl_INCLUDE_DIRS})
-  endif()
-
-  add_subdirectory(po)
-
-  add_definitions(-DENABLE_NLS)
-  add_definitions(-DLOCALEDIR="${CMAKE_INSTALL_PREFIX}/share/locale")
-endif (ENABLE_NLS)
+#if (ENABLE_NLS)
+#  find_package (Intl)
+#  if (Intl_FOUND)
+#    include_directories (${Intl_INCLUDE_DIRS})
+#  endif()
+#
+#  add_subdirectory(po)
+#
+#  add_definitions(-DENABLE_NLS)
+#  add_definitions(-DLOCALEDIR="${CMAKE_INSTALL_PREFIX}/share/locale")
+#endif (ENABLE_NLS)
 
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy-4.0" "clang-tidy40" "clang-tidy" DOC "Path to clang-tidy executable")
 if(NOT CLANG_TIDY_EXE)
@@ -370,21 +374,21 @@ if (POD2MAN)
     DESTINATION ${MAN_DESTINATION})
 endif (POD2MAN)
 
-if (BUILD_UNIT_TESTS)
-  enable_testing()
-
-  set(GOOGLETEST_DIR vendor/github.com/google/googletest)
-  add_subdirectory(${GOOGLETEST_DIR} EXCLUDE_FROM_ALL)
-  link_directories(${CMAKE_BINARY_DIR}/${GOOGLETEST_DIR}/googletest)
-
-  set(GOOGLEBENCH_DIR vendor/github.com/google/benchmark)
-  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "benchmark tests")
-  add_subdirectory(${GOOGLEBENCH_DIR} EXCLUDE_FROM_ALL)
-  link_directories(${CMAKE_BINARY_DIR}/${GOOGLEBENCH_DIR})
-
-  # Unit tests.
-  add_subdirectory(test EXCLUDE_FROM_ALL)
-
-  # Integration test target - runs against built encfs.
-  add_custom_target(integration COMMAND ${CMAKE_CURRENT_LIST_DIR}/integration.sh)
-endif ()
+#if (BUILD_UNIT_TESTS)
+#  enable_testing()
+#
+#  set(GOOGLETEST_DIR vendor/github.com/google/googletest)
+#  add_subdirectory(${GOOGLETEST_DIR} EXCLUDE_FROM_ALL)
+#  link_directories(${CMAKE_BINARY_DIR}/${GOOGLETEST_DIR}/googletest)
+#
+#  set(GOOGLEBENCH_DIR vendor/github.com/google/benchmark)
+#  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "benchmark tests")
+#  add_subdirectory(${GOOGLEBENCH_DIR} EXCLUDE_FROM_ALL)
+#  link_directories(${CMAKE_BINARY_DIR}/${GOOGLEBENCH_DIR})
+#
+#  # Unit tests.
+#  add_subdirectory(test EXCLUDE_FROM_ALL)
+#
+#  # Integration test target - runs against built encfs.
+#  add_custom_target(integration COMMAND ${CMAKE_CURRENT_LIST_DIR}/integration.sh)
+#endif ()
