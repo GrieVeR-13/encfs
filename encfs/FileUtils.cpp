@@ -997,7 +997,7 @@ RootPtr createV6Config(EncFS_Context *ctx,
   const std::string rootDir = opts->rootDir;
   bool enableIdleTracking = opts->idleTracking;
   bool forceDecode = opts->forceDecode;
-  const std::string passwordProgram = opts->passwordProgram;
+//  const std::string passwordProgram = opts->passwordProgram;
   bool useStdin = opts->useStdin;
   bool reverseEncryption = opts->reverseEncryption;
   ConfigMode configMode = opts->configMode;
@@ -1227,8 +1227,9 @@ RootPtr createV6Config(EncFS_Context *ctx,
       cerr << "$PROMPT$ new_passwd" << endl;
     }
     userKey = config->getUserKey(useStdin);
-  } else if (!passwordProgram.empty()) {
-    userKey = config->getUserKey(passwordProgram, rootDir);
+  } else if (!opts->passwordProgram.empty()) {
+//    userKey = config->getUserKey(passwordProgram, rootDir);
+    userKey = config->getUserKey(opts->passwordProgram);
   } else {
     userKey = config->getNewUserKey();
   }
@@ -1577,6 +1578,15 @@ CipherKey EncFSConfig::getUserKey(const std::string &passProg,
 
   // clear buffer..
   password.assign(password.length(), '\0');
+
+  return result;
+}
+
+CipherKey EncFSConfig::getUserKey(std::string &password) {
+  CipherKey result = makeKey(password.c_str(), password.length());
+
+  // clear buffer..
+  password.assign(password.length(), '\0'); //todoe cryfs
 
   return result;
 }

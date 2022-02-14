@@ -266,6 +266,7 @@ else ()
 endif ()
 
 set(SOURCE_FILES
+  encfs/main.cpp
   encfs/autosprintf.cpp
   encfs/base64.cpp
   encfs/BlockFileIO.cpp
@@ -326,14 +327,14 @@ endif()
 # Set RPATH to library install path.
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 
-add_executable (encfs-bin encfs/main.cpp)
-target_link_libraries (encfs-bin encfs)
-set_target_properties (encfs-bin PROPERTIES OUTPUT_NAME "encfs")
-install (TARGETS encfs-bin DESTINATION bin)
+#add_executable (encfs-bin encfs/main.cpp)
+#target_link_libraries (encfs-bin encfs)
+#set_target_properties (encfs-bin PROPERTIES OUTPUT_NAME "encfs")
+#install (TARGETS encfs-bin DESTINATION bin)
 
 if(LINT AND CLANG_TIDY_EXE)
   set_target_properties(encfs PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
-  set_target_properties(encfs-bin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
+#  set_target_properties(encfs-bin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
 endif()
 
 add_executable (encfsctl encfs/encfsctl.cpp)

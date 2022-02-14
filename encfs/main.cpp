@@ -15,7 +15,7 @@
  * details.
  *
  */
-
+#include "EncFsMain.h"
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
@@ -574,12 +574,12 @@ static bool processArgs(int argc, char *argv[],
   }
 
   // check that the directories exist, or that we can create them..
-  if (!isDirectory(out->opts->rootDir.c_str()) &&
+/*  if (!isDirectory(out->opts->rootDir.c_str()) &&
       !userAllowMkdir(out->opts->annotate ? 1 : 0, out->opts->rootDir.c_str(),
                       0700)) {
     cerr << _("Unable to locate root directory, aborting.") << endl;
     return false;
-  }
+  }*/
 #ifdef __CYGWIN__
   if (isDirectory(out->opts->mountPoint.c_str())) {
     cerr << _("Mount point must not exist before mouting, aborting.") << endl;
@@ -592,12 +592,12 @@ static bool processArgs(int argc, char *argv[],
          << _("Mounting anyway.")  << endl;
   }
 #else
-  if (!isDirectory(out->opts->mountPoint.c_str()) &&
+/*  if (!isDirectory(out->opts->mountPoint.c_str()) &&
       !userAllowMkdir(out->opts->annotate ? 2 : 0,
                       out->opts->mountPoint.c_str(), 0700)) {
     cerr << _("Unable to locate mount point, aborting.") << endl;
     return false;
-  }
+  }*/
 #endif
 
   // fill in mount path for fuse
@@ -653,7 +653,7 @@ void *encfs_init(fuse_conn_info *conn) {
   return (void *)ctx;
 }
 
-int main(int argc, char *argv[]) {
+int encfs::main(int argc, char *argv[]) {
 #if defined(ENABLE_NLS) && defined(LOCALEDIR)
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
