@@ -273,7 +273,7 @@ static bool processArgs(int argc, char *argv[],
       {"config", 1, nullptr, 'c'},                // command-line-supplied config location
       {"unmount", 1, nullptr, 'u'},               // unmount
       {nullptr, 0, nullptr, 0}};
-
+  optind = 1; //todo global variable, potential error
   while (true) {
     int option_index = 0;
 
@@ -736,9 +736,13 @@ FuseSession * encfs::main(int argc, char *argv[]) {
 
   // context is not a smart pointer because it will live for the life of
   // the filesystem.
-  auto ctx = std::make_shared<EncFS_Context>();
+//  auto ctx = std::make_shared<EncFS_Context>();
+  auto ctx = new EncFS_Context();
   ctx->publicFilesystem = encfsArgs->opts->ownerCreate;
-  RootPtr rootInfo = initFS(ctx.get(), encfsArgs->opts);
+  RootPtr rootInfo = initFS(ctx, encfsArgs->opts);
+
+//  std::shared_ptr<EncFS_Root> *newRootInfo = new shared_ptr<EncFS_Root>(rootInfo);
+  ctx->rootInfo = rootInfo;
 
   FuseSession *fuseSession = nullptr;
 
@@ -787,7 +791,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
       // fuse_main returns an error code in newer versions of fuse..
       fuseSession = fuse_main(encfsArgs->fuseArgc,
                                            const_cast<char **>(encfsArgs->fuseArgv), &encfs_oper,
-                                           (void *)ctx.get());
+                                           (void *)ctx);
       time(&endTime);
 
       if (encfsArgs->opts->annotate) {
@@ -797,6 +801,9 @@ FuseSession * encfs::main(int argc, char *argv[]) {
 //      if (res == 0) {
 //        returnCode = EXIT_SUCCESS;
 //      }
+      if (fuseSession != nullptr) {
+        return fuseSession;
+      }
 
       if (fuseSession == nullptr && encfsArgs->isDaemon && (oldStderr >= 0) &&
           (endTime - startTime <= 1)) {
@@ -817,7 +824,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
       RLOG(ERROR) << "Internal error: Caught unexpected exception";
     }
 
-    if (ctx->args->idleTimeout > 0) {
+    if (ctx->args->idleTimeout > 0) { //todoe clean
       ctx->running = false;
       // wake up the thread if it is waiting..
       VLOG(1) << "waking up monitoring thread";

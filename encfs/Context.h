@@ -39,6 +39,8 @@ class FileNode;
 struct EncFS_Args;
 struct EncFS_Opts;
 
+class EncFS_Root; //todoe
+
 class EncFS_Context {
  public:
   EncFS_Context();
@@ -73,6 +75,8 @@ class EncFS_Context {
 
   uint64_t nextFuseFh();
   std::shared_ptr<FileNode> lookupFuseFh(uint64_t);
+
+  std::shared_ptr<EncFS_Root> rootInfo = nullptr;
 
  private:
   /* This placeholder is what is referenced in FUSE context (passed to
