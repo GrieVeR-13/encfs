@@ -105,7 +105,7 @@ endif()
 # Check for FUSE.
 #find_package (FUSE REQUIRED)
 include_directories (${FUSEFS_INCLUDE_PATH})
-#add_definitions (-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=29)
+add_definitions (-D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=29 -D_LIBCPP_HAS_NO_OFF_T_FUNCTIONS)
 if (CYGWIN)
   # Cygwin build is intended to use WinFsp
   add_definitions(-DCYGFUSE)

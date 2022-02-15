@@ -111,7 +111,7 @@ struct ConfigInfo {
   int defaultSubVersion;
 } ConfigFileMapping[] = {
     // current format
-    {".encfs6.xml", Config_V6, "ENCFS6_CONFIG", readV6Config, writeV6Config,
+    {"encfs6.xml", Config_V6, "ENCFS6_CONFIG", readV6Config, writeV6Config, //todoe
      V6SubVersion, 0},
     // backward compatible support for older versions
     {".encfs5", Config_V5, "ENCFS5_CONFIG", readV5Config, writeV5Config,
@@ -1674,7 +1674,8 @@ RootPtr initFS(EncFS_Context *ctx, const std::shared_ptr<EncFS_Opts> &opts) {
       }
       userKey = config->getUserKey(opts->useStdin);
     } else {
-      userKey = config->getUserKey(opts->passwordProgram, opts->rootDir);
+//      userKey = config->getUserKey(opts->passwordProgram, opts->rootDir);
+      userKey = config->getUserKey(opts->passwordProgram);
     }
 
     if (!userKey) {

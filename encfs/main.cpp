@@ -653,7 +653,7 @@ void *encfs_init(fuse_conn_info *conn) {
   return (void *)ctx;
 }
 
-int encfs::main(int argc, char *argv[]) {
+FuseSession * encfs::main(int argc, char *argv[]) {
 #if defined(ENABLE_NLS) && defined(LOCALEDIR)
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
@@ -669,7 +669,7 @@ int encfs::main(int argc, char *argv[]) {
 
   if (argc == 1 || !processArgs(argc, argv, encfsArgs)) {
     usage(argv[0]);
-    return EXIT_FAILURE;
+    return nullptr;
   }
 
   encfs::initLogging(encfsArgs->isVerbose, encfsArgs->isDaemon);
@@ -680,7 +680,7 @@ int encfs::main(int argc, char *argv[]) {
     // We use cout here to avoid logging to stderr (and to mess-up tests output)
     cout << "Filesystem unmounting: " << encfsArgs->opts->unmountPoint << endl;
     unmountFS(encfsArgs->opts->unmountPoint.c_str());
-    return 0;
+    return nullptr;
   }
 
   VLOG(1) << "Root directory: " << encfsArgs->opts->rootDir;
@@ -692,7 +692,7 @@ int encfs::main(int argc, char *argv[]) {
   // 0..
   memset(&encfs_oper, 0, sizeof(fuse_operations));
 
-  /*encfs_oper.getattr = encfs_getattr; //todoe
+  encfs_oper.getattr = encfs_getattr;
   encfs_oper.readlink = encfs_readlink;
   encfs_oper.readdir = encfs_readdir;
   encfs_oper.mknod = encfs_mknod;
@@ -730,7 +730,7 @@ int encfs::main(int argc, char *argv[]) {
   encfs_oper.fgetattr = encfs_fgetattr;
   // encfs_oper.lock = encfs_lock;
   encfs_oper.utimens = encfs_utimens;
-  // encfs_oper.bmap = encfs_bmap;*/
+  // encfs_oper.bmap = encfs_bmap;
 
   openssl_init(encfsArgs->isThreaded);
 
@@ -740,7 +740,7 @@ int encfs::main(int argc, char *argv[]) {
   ctx->publicFilesystem = encfsArgs->opts->ownerCreate;
   RootPtr rootInfo = initFS(ctx.get(), encfsArgs->opts);
 
-  int returnCode = EXIT_FAILURE;
+  FuseSession *fuseSession = nullptr;
 
   if (rootInfo) {
     // turn off delayMount, as our prior call to initFS has already
@@ -785,21 +785,20 @@ int encfs::main(int argc, char *argv[]) {
       time(&startTime);
 
       // fuse_main returns an error code in newer versions of fuse..
-//      int res = fuse_main(encfsArgs->fuseArgc,
-//                          const_cast<char **>(encfsArgs->fuseArgv), &encfs_oper,
-//                          (void *)ctx.get());
-  int res = 0; //todoe
+      fuseSession = fuse_main(encfsArgs->fuseArgc,
+                                           const_cast<char **>(encfsArgs->fuseArgv), &encfs_oper,
+                                           (void *)ctx.get());
       time(&endTime);
 
       if (encfsArgs->opts->annotate) {
         cerr << "$STATUS$ fuse_main_end" << endl;
       }
 
-      if (res == 0) {
-        returnCode = EXIT_SUCCESS;
-      }
+//      if (res == 0) {
+//        returnCode = EXIT_SUCCESS;
+//      }
 
-      if (res != 0 && encfsArgs->isDaemon && (oldStderr >= 0) &&
+      if (fuseSession == nullptr && encfsArgs->isDaemon && (oldStderr >= 0) &&
           (endTime - startTime <= 1)) {
         // the users will not have seen any message from fuse, so say a
         // few words in libfuse's memory..
@@ -838,7 +837,7 @@ int encfs::main(int argc, char *argv[]) {
   MemoryPool::destroyAll();
   openssl_shutdown(encfsArgs->isThreaded);
 
-  return returnCode;
+  return fuseSession;
 }
 
 /*
