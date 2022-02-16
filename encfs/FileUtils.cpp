@@ -1733,7 +1733,7 @@ RootPtr initFS(EncFS_Context *ctx, const std::shared_ptr<EncFS_Opts> &opts) {
     rootInfo = std::make_shared<encfs::EncFS_Root>();
     rootInfo->cipher = cipher;
     rootInfo->volumeKey = volumeKey;
-    rootInfo->root = std::make_shared<DirNode>(ctx, opts->rootDir, fsConfig);
+    rootInfo->root = std::make_shared<DirNode>(ctx, opts->rootDir, fsConfig);//todoe close pathnameFs on destroy op by root
   } else {
     if (opts->createIfNotFound) {
       // creating a new encrypted filesystem

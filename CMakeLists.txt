@@ -309,6 +309,7 @@ target_link_libraries(encfs
   ${CMAKE_THREAD_LIBS_INIT}
   ${Intl_LIBRARIES}
   ${ATOMIC_LIBRARY}
+  util
 )
 if (INSTALL_LIBENCFS)
   install (TARGETS encfs DESTINATION ${LIB_INSTALL_DIR})
