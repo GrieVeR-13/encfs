@@ -37,6 +37,10 @@
 #include "FileNode.h"
 #include "NameIO.h"
 
+namespace pathnameFileSystem {
+    struct DIR;
+}
+
 namespace encfs {
 
 class Cipher;
@@ -48,7 +52,7 @@ struct RenameEl;
 
 class DirTraverse {
  public:
-  DirTraverse(std::shared_ptr<DIR> dirPtr, uint64_t iv,
+  DirTraverse(std::shared_ptr<pathnameFileSystem::DIR> dirPtr, uint64_t iv,
               std::shared_ptr<NameIO> naming, bool root);
   ~DirTraverse();
 
@@ -69,7 +73,7 @@ class DirTraverse {
   std::string nextInvalid();
 
  private:
-  std::shared_ptr<DIR> dir;  // struct DIR
+  std::shared_ptr<pathnameFileSystem::DIR> dir;  // struct DIR
   // initialization vector to use.  Not very general purpose, but makes it
   // more efficient to support filename IV chaining..
   uint64_t iv;
