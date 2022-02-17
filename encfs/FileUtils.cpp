@@ -66,9 +66,10 @@
 #include "i18n.h"
 #include "intl/gettext.h"
 #include "readpassphrase.h"
-#include "filesystem/PathnameFileSystemProviderNative.h"
+#include "filesystem/PathnameFileSystemNativeStdio.h"
 
 using namespace std;
+
 using gnu::autosprintf;
 
 namespace encfs {
@@ -129,19 +130,16 @@ EncFS_Root::EncFS_Root() = default;
 EncFS_Root::~EncFS_Root() = default;
 
 bool fileExists(const char *fileName) {
-//  struct stat buf;
-//  return lstat(fileName, &buf) == 0;
-  return PathnameFileSystemProviderNative::getPathnameFileSystemNative().exists(fileName);
+  struct stat buf;
+  return lstat(fileName, &buf) == 0;
 }
 
 bool isDirectory(const char *fileName) {
-//  struct stat buf;
-//  if (lstat(fileName, &buf) == 0) {
-//    return S_ISDIR(buf.st_mode);
-//  }
-//  return false;
-  auto fso = PathnameFileSystemProviderNative::getPathnameFileSystemNative().getFsObjectNative(fileName); //todoe replace lstat?
-  return fso != nullptr && fso->isGroup();
+  struct stat buf;
+  if (lstat(fileName, &buf) == 0) {
+    return S_ISDIR(buf.st_mode);
+  }
+  return false;
 }
 
 bool isAbsolutePath(const char *fileName) {
@@ -233,7 +231,7 @@ ConfigType readConfig_load(ConfigInfo *nm, const char *path,
 ConfigType readConfig(const string &rootDir, EncFSConfig *config, const string &cmdConfig) {
   ConfigInfo *nm = ConfigFileMapping;
   while (nm->fileName != nullptr) {
-   // allow command line argument to override default config path 
+   // allow command line argument to override default config path
     if (!cmdConfig.empty()) {
       if (!fileExists(cmdConfig.c_str())) {
         RLOG(ERROR)
