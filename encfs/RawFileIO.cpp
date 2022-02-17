@@ -33,6 +33,7 @@
 #include "Error.h"
 #include "FileIO.h"
 #include "RawFileIO.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 using namespace std;
 
@@ -116,7 +117,7 @@ static int open_readonly_workaround(const char *path, int flags) {
     -  Also keep the O_LARGEFILE flag, in case the underlying filesystem needs
        it..
 */
-int RawFileIO::open(int flags) {
+int RawFileIO::_open(int flags) {
   bool requestWrite = (((flags & O_RDWR) != 0) || ((flags & O_WRONLY) != 0));
   VLOG(1) << "open call, requestWrite = " << requestWrite;
 

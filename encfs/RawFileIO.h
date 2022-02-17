@@ -40,7 +40,7 @@ class RawFileIO : public FileIO {
   virtual void setFileName(const char *fileName);
   virtual const char *getFileName() const;
 
-  virtual int open(int flags);
+  virtual int _open(int flags);
 
   virtual int getAttr(struct stat *stbuf) const;
   virtual off_t getSize() const;
