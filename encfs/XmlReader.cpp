@@ -32,6 +32,8 @@
 #include "Error.h"
 #include "Interface.h"
 #include "base64.h"
+#include "filesystem/RandomAccessIONativeStream.h"
+#include "filesystem/PathnameFileSystemProviderNative.h"
 
 namespace encfs {
 
@@ -204,7 +206,10 @@ XmlReader::~XmlReader() = default;
 bool XmlReader::load(const char *fileName) {
   pd->doc.reset(new tinyxml2::XMLDocument());
 
-  std::ifstream in(fileName);
+//  std::ifstream in(fileName);
+  auto randomAccessReader = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openRandomAccessReader(fileName);
+  pathnameFileSystem::InputStreamNativeIStream in(randomAccessReader.get());
+
   if (!in) {
     return false;
   }
@@ -212,6 +217,7 @@ bool XmlReader::load(const char *fileName) {
   std::ostringstream fileContent;
   fileContent << in.rdbuf();
   auto err = pd->doc->Parse(fileContent.str().c_str());
+  randomAccessReader->close();
   return err == tinyxml2::XML_SUCCESS;
 }
 
