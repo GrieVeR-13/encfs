@@ -24,6 +24,8 @@ distribution.
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 
+#include <filesystem/RandomAccessIONative.h>
+
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <ctype.h>
 #   include <limits.h>
@@ -41,6 +43,7 @@ distribution.
 #   include <cstring>
 #endif
 #include <stdint.h>
+#include <jni.h>
 
 /*
    TODO: intern strings instead of allocation.
@@ -88,6 +91,7 @@ distribution.
 #       define TIXMLASSERT( x )           if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); }
 #   else
 #       include <assert.h>
+
 #       define TIXMLASSERT                assert
 #   endif
 #else
@@ -1725,7 +1729,7 @@ public:
     	Returns XML_SUCCESS (0) on success, or
     	an errorID.
     */
-    XMLError SaveFile( FILE* fp, bool compact = false );
+    XMLError SaveFile( RandomAccessIONative *fp, bool compact = false );
 
     bool ProcessEntities() const		{
         return _processEntities;
@@ -2186,7 +2190,7 @@ public:
     	If 'compact' is set to true, then output is created
     	with only required whitespace and newlines.
     */
-    XMLPrinter( FILE* file=0, bool compact = false, int depth = 0 );
+    XMLPrinter( RandomAccessIONative  *file= nullptr, bool compact = false, int depth = 0 );
     virtual ~XMLPrinter()	{}
 
     /** If streaming, write the BOM and declaration. */
@@ -2284,7 +2288,7 @@ private:
     void PrintString( const char*, bool restrictedEntitySet );	// prints out, after detecting entities.
 
     bool _firstElement;
-    FILE* _fp;
+    RandomAccessIONative * _fp;
     int _depth;
     int _textDepth;
     bool _processEntities;

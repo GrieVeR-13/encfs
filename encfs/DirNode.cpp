@@ -41,6 +41,8 @@
 #include "Mutex.h"
 #include "NameIO.h"
 #include "easylogging++.h"
+#include "filesystem/PathnameFileSystemProviderNative.h"
+#include "Exception.h"
 
 using namespace std;
 
@@ -528,7 +530,8 @@ int DirNode::mkdir(const char *plaintextPath, mode_t mode, uid_t uid,
     }
   }
 
-  int res = ::mkdir(cyName.c_str(), mode);
+//  int res = ::mkdir(cyName.c_str(), mode);
+  int res =PathnameFileSystemProviderNative::getPathnameFileSystemNative().newGroupC(cyName, false);
 
   if (res == -1) {
     int eno = errno;

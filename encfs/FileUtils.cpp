@@ -66,6 +66,7 @@
 #include "i18n.h"
 #include "intl/gettext.h"
 #include "readpassphrase.h"
+#include "filesystem/PathnameFileSystemProviderNative.h"
 
 using namespace std;
 using gnu::autosprintf;
@@ -128,16 +129,19 @@ EncFS_Root::EncFS_Root() = default;
 EncFS_Root::~EncFS_Root() = default;
 
 bool fileExists(const char *fileName) {
-  struct stat buf;
-  return lstat(fileName, &buf) == 0;
+//  struct stat buf;
+//  return lstat(fileName, &buf) == 0;
+  return PathnameFileSystemProviderNative::getPathnameFileSystemNative().exists(fileName);
 }
 
 bool isDirectory(const char *fileName) {
-  struct stat buf;
-  if (lstat(fileName, &buf) == 0) {
-    return S_ISDIR(buf.st_mode);
-  }
-  return false;
+//  struct stat buf;
+//  if (lstat(fileName, &buf) == 0) {
+//    return S_ISDIR(buf.st_mode);
+//  }
+//  return false;
+  auto fso = PathnameFileSystemProviderNative::getPathnameFileSystemNative().getFsObjectNativeC(fileName); //todoe replace lstat?
+  return fso != nullptr && fso->isGroup();
 }
 
 bool isAbsolutePath(const char *fileName) {
