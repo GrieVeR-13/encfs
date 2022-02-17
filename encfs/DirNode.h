@@ -124,7 +124,7 @@ class DirNode {
   bool hasDirectoryNameDependency() const;
 
   // unlink the specified file
-  int unlink(const char *plaintextName);
+  int _unlink(const char *plaintextName);
 
   // traverse directory
   DirTraverse openDir(const char *plainDirName);
@@ -133,9 +133,9 @@ class DirNode {
   int mkdir(const char *plaintextPath, mode_t mode, uid_t uid = 0,
             gid_t gid = 0);
 
-  int rename(const char *fromPlaintext, const char *toPlaintext);
+  int _rename(const char *fromPlaintext, const char *toPlaintext);
 
-  int link(const char *to, const char *from);
+  int _link(const char *to, const char *from);
 
   // returns idle time of filesystem in seconds
   int idleSeconds();

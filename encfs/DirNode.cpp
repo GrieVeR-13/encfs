@@ -41,7 +41,7 @@
 #include "Mutex.h"
 #include "NameIO.h"
 #include "easylogging++.h"
-#include "filesystem/PathnameFileSystemNativeStdio.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 using namespace std;
 
@@ -49,7 +49,7 @@ namespace encfs {
 
 class DirDeleter {
  public:
-  void operator()(pathnameFileSystem::DIR *d) { pathnameFileSystem::closedir(d); }
+  void operator()(pathnameFileSystem::DIR *d) { ::closedir(d); }
 };
 
 DirTraverse::DirTraverse(std::shared_ptr<pathnameFileSystem::DIR> _dirPtr, uint64_t _iv,
@@ -67,7 +67,7 @@ DirTraverse::~DirTraverse() {
 
 static bool _nextName(struct dirent *&de, const std::shared_ptr<pathnameFileSystem::DIR> &dir,
                       int *fileType, ino_t *inode) {
-  de = pathnameFileSystem::readdir(dir.get());
+  de = ::readdir(dir.get());
 
   if (de != nullptr) {
     if (fileType != nullptr) {
@@ -185,13 +185,13 @@ bool RenameOp::apply() {
       VLOG(1) << "renaming " << last->oldCName << " -> " << last->newCName;
 
       struct stat st;
-      bool preserve_mtime = pathnameFileSystem::stat(last->oldCName.c_str(), &st) == 0;
+      bool preserve_mtime = ::stat(last->oldCName.c_str(), &st) == 0;
 
       // internal node rename..
       dn->renameNode(last->oldPName.c_str(), last->newPName.c_str());
 
       // rename on disk..
-      if (pathnameFileSystem::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
+      if (::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
         int eno = errno;
         RLOG(WARNING) << "Error renaming " << last->oldCName << ": "
                       << strerror(eno);
@@ -203,7 +203,7 @@ bool RenameOp::apply() {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        pathnameFileSystem::utime(last->newCName.c_str(), &ut);
+        ::utime(last->newCName.c_str(), &ut);
       }
 
       ++last;
@@ -234,7 +234,7 @@ void RenameOp::undo() {
 
     VLOG(1) << "undo: renaming " << it->newCName << " -> " << it->oldCName;
 
-    pathnameFileSystem::rename(it->newCName.c_str(), it->oldCName.c_str());
+    ::rename(it->newCName.c_str(), it->oldCName.c_str());
     try {
       dn->renameNode(it->newPName.c_str(), it->oldPName.c_str(), false);
     } catch (encfs::Error &err) {
@@ -361,7 +361,7 @@ string DirNode::relativeCipherPath(const char *plaintextPath) {
 DirTraverse DirNode::openDir(const char *plaintextPath) {
   string cyName = rootDir + naming->encodePath(plaintextPath);
 
-  pathnameFileSystem::DIR *dir = pathnameFileSystem::opendir(cyName.c_str());
+  pathnameFileSystem::DIR *dir = ::opendir(cyName.c_str());
   if (dir == nullptr) {
     int eno = errno;
     VLOG(1) << "opendir error " << strerror(eno);
@@ -401,13 +401,13 @@ bool DirNode::genRenameList(list<RenameEl> &renameList, const char *fromP,
   // generate the real destination path, where we expect to find the files..
   VLOG(1) << "opendir " << sourcePath;
   std::shared_ptr<pathnameFileSystem::DIR> dir =
-      std::shared_ptr<pathnameFileSystem::DIR>(pathnameFileSystem::opendir(sourcePath.c_str()), DirDeleter());
+      std::shared_ptr<pathnameFileSystem::DIR>(::opendir(sourcePath.c_str()), DirDeleter());
   if (!dir) {
     return false;
   }
 
   struct dirent *de = nullptr;
-  while ((de = pathnameFileSystem::readdir(dir.get())) != nullptr) {
+  while ((de = ::readdir(dir.get())) != nullptr) {
     // decode the name using the oldIV
     uint64_t localIV = fromIV;
     string plainName;
@@ -556,7 +556,7 @@ int DirNode::mkdir(const char *plaintextPath, mode_t mode, uid_t uid,
   return res;
 }
 
-int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
+int DirNode::_rename(const char *fromPlaintext, const char *toPlaintext) {
   Lock _lock(mutex);
 
   string fromCName = rootDir + naming->encodePath(fromPlaintext);
@@ -587,10 +587,10 @@ int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
   int res = 0;
   try {
     struct stat st;
-    bool preserve_mtime = pathnameFileSystem::stat(fromCName.c_str(), &st) == 0;
+    bool preserve_mtime = ::stat(fromCName.c_str(), &st) == 0;
 
     renameNode(fromPlaintext, toPlaintext);
-    res = pathnameFileSystem::rename(fromCName.c_str(), toCName.c_str());
+    res = ::rename(fromCName.c_str(), toCName.c_str());
 
     if (res == -1) {
       // undo
@@ -618,7 +618,7 @@ int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        pathnameFileSystem::utime(toCName.c_str(), &ut);
+        ::utime(toCName.c_str(), &ut);
       }
     }
   } catch (encfs::Error &err) {
@@ -634,7 +634,7 @@ int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
   return res;
 }
 
-int DirNode::link(const char *to, const char *from) {
+int DirNode::_link(const char *to, const char *from) {
   Lock _lock(mutex);
 
   string toCName = rootDir + naming->encodePath(to);
@@ -649,7 +649,7 @@ int DirNode::link(const char *to, const char *from) {
   if (fsConfig->config->externalIVChaining) {
     VLOG(1) << "hard links not supported with external IV chaining!";
   } else {
-    res = pathnameFileSystem::link(toCName.c_str(), fromCName.c_str());
+    res = ::link(toCName.c_str(), fromCName.c_str());
     if (res == -1) {
       res = -errno;
     } else {
@@ -749,7 +749,7 @@ std::shared_ptr<FileNode> DirNode::openNode(const char *plainName,
   return std::shared_ptr<FileNode>();
 }
 
-int DirNode::unlink(const char *plaintextName) {
+int DirNode::_unlink(const char *plaintextName) {
   string cyName = naming->encodePath(plaintextName);
   VLOG(1) << "unlink " << cyName;
 
@@ -771,7 +771,7 @@ int DirNode::unlink(const char *plaintextName) {
 
   int res = 0;
   string fullName = rootDir + cyName;
-  res = pathnameFileSystem::unlink(fullName.c_str());
+  res = ::unlink(fullName.c_str());
   if (res == -1) {
     res = -errno;
     VLOG(1) << "unlink error: " << strerror(-res);

@@ -66,7 +66,7 @@
 #include "i18n.h"
 #include "intl/gettext.h"
 #include "readpassphrase.h"
-#include "filesystem/PathnameFileSystemNativeStdio.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 using namespace std;
 
@@ -131,12 +131,12 @@ EncFS_Root::~EncFS_Root() = default;
 
 bool fileExists(const char *fileName) {
   struct stat buf;
-  return pathnameFileSystem::lstat(fileName, &buf) == 0;
+  return ::lstat(fileName, &buf) == 0;
 }
 
 bool isDirectory(const char *fileName) {
   struct stat buf;
-  if (pathnameFileSystem::lstat(fileName, &buf) == 0) {
+  if (::lstat(fileName, &buf) == 0) {
     return S_ISDIR(buf.st_mode);
   }
   return false;
