@@ -587,10 +587,10 @@ int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
   int res = 0;
   try {
     struct stat st;
-    bool preserve_mtime = ::stat(fromCName.c_str(), &st) == 0;
+    bool preserve_mtime = pathnameFileSystem::stat(fromCName.c_str(), &st) == 0;
 
     renameNode(fromPlaintext, toPlaintext);
-    res = ::rename(fromCName.c_str(), toCName.c_str());
+    res = pathnameFileSystem::rename(fromCName.c_str(), toCName.c_str());
 
     if (res == -1) {
       // undo
