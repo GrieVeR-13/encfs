@@ -38,7 +38,7 @@
 #include "MACFileIO.h"
 #include "Mutex.h"
 #include "RawFileIO.h"
-#include "filesystem/PathnameFileSystemNative.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 using namespace std;
 

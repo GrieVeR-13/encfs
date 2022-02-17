@@ -49,7 +49,7 @@ namespace encfs {
 
 class DirDeleter {
  public:
-  void operator()(pathnameFileSystem::DIR *d) { ::closedir(d); }
+  void operator()(pathnameFileSystem::DIR *d) { pathnameFileSystem::closedir(d); }
 };
 
 DirTraverse::DirTraverse(std::shared_ptr<pathnameFileSystem::DIR> _dirPtr, uint64_t _iv,
@@ -67,7 +67,7 @@ DirTraverse::~DirTraverse() {
 
 static bool _nextName(struct dirent *&de, const std::shared_ptr<pathnameFileSystem::DIR> &dir,
                       int *fileType, ino_t *inode) {
-  de = ::readdir(dir.get());
+  de = pathnameFileSystem::readdir(dir.get());
 
   if (de != nullptr) {
     if (fileType != nullptr) {
@@ -361,7 +361,7 @@ string DirNode::relativeCipherPath(const char *plaintextPath) {
 DirTraverse DirNode::openDir(const char *plaintextPath) {
   string cyName = rootDir + naming->encodePath(plaintextPath);
 
-  pathnameFileSystem::DIR *dir = ::opendir(cyName.c_str());
+  pathnameFileSystem::DIR *dir = pathnameFileSystem::opendir(cyName.c_str());
   if (dir == nullptr) {
     int eno = errno;
     VLOG(1) << "opendir error " << strerror(eno);
@@ -401,13 +401,13 @@ bool DirNode::genRenameList(list<RenameEl> &renameList, const char *fromP,
   // generate the real destination path, where we expect to find the files..
   VLOG(1) << "opendir " << sourcePath;
   std::shared_ptr<pathnameFileSystem::DIR> dir =
-      std::shared_ptr<pathnameFileSystem::DIR>(::opendir(sourcePath.c_str()), DirDeleter());
+      std::shared_ptr<pathnameFileSystem::DIR>(pathnameFileSystem::opendir(sourcePath.c_str()), DirDeleter());
   if (!dir) {
     return false;
   }
 
   struct dirent *de = nullptr;
-  while ((de = ::readdir(dir.get())) != nullptr) {
+  while ((de = pathnameFileSystem::readdir(dir.get())) != nullptr) {
     // decode the name using the oldIV
     uint64_t localIV = fromIV;
     string plainName;

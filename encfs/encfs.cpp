@@ -594,7 +594,7 @@ int encfs_ftruncate(const char *path, off_t size, struct fuse_file_info *fi) {
 }
 
 int _do_utime(EncFS_Context *, const string &cyName, struct utimbuf *buf) {
-  int res = utime(cyName.c_str(), buf);
+  int res = pathnameFileSystem::utime(cyName.c_str(), buf);
   return (res == -1) ? -errno : ESUCCESS;
 }
 

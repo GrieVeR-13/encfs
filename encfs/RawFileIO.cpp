@@ -98,7 +98,7 @@ static int open_readonly_workaround(const char *path, int flags) {
   int fd = -1;
   struct stat stbuf;
   memset(&stbuf, 0, sizeof(struct stat));
-  if (lstat(path, &stbuf) != -1) {
+  if (pathnameFileSystem::lstat(path, &stbuf) != -1) {
     // make sure user has read/write permission..
     if (chmod(path, stbuf.st_mode | 0600) != -1) {
       fd = ::open(path, flags);
@@ -117,7 +117,7 @@ static int open_readonly_workaround(const char *path, int flags) {
     -  Also keep the O_LARGEFILE flag, in case the underlying filesystem needs
        it..
 */
-int RawFileIO::_open(int flags) {
+int RawFileIO::open(int flags) {
   bool requestWrite = (((flags & O_RDWR) != 0) || ((flags & O_WRONLY) != 0));
   VLOG(1) << "open call, requestWrite = " << requestWrite;
 
@@ -169,7 +169,7 @@ int RawFileIO::_open(int flags) {
 }
 
 int RawFileIO::getAttr(struct stat *stbuf) const {
-  int res = lstat(name.c_str(), stbuf);
+  int res = pathnameFileSystem::lstat(name.c_str(), stbuf);
   int eno = errno;
 
   if (res < 0) {
@@ -187,7 +187,7 @@ off_t RawFileIO::getSize() const {
   if (!knownSize) {
     struct stat stbuf;
     memset(&stbuf, 0, sizeof(struct stat));
-    int res = lstat(name.c_str(), &stbuf);
+    int res = pathnameFileSystem::lstat(name.c_str(), &stbuf);
 
     if (res == 0) {
       const_cast<RawFileIO *>(this)->fileSize = stbuf.st_size;
