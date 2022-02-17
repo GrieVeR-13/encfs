@@ -531,7 +531,7 @@ int DirNode::mkdir(const char *plaintextPath, mode_t mode, uid_t uid,
   }
 
 //  int res = ::mkdir(cyName.c_str(), mode);
-  int res =PathnameFileSystemProviderNative::getPathnameFileSystemNative().newGroupC(cyName, false);
+  int res = PathnameFileSystemProviderNative::getPathnameFileSystemNative().newGroup(cyName, false);
 
   if (res == -1) {
     int eno = errno;

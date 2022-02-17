@@ -140,7 +140,7 @@ bool isDirectory(const char *fileName) {
 //    return S_ISDIR(buf.st_mode);
 //  }
 //  return false;
-  auto fso = PathnameFileSystemProviderNative::getPathnameFileSystemNative().getFsObjectNativeC(fileName); //todoe replace lstat?
+  auto fso = PathnameFileSystemProviderNative::getPathnameFileSystemNative().getFsObjectNative(fileName); //todoe replace lstat?
   return fso != nullptr && fso->isGroup();
 }
 

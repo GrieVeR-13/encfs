@@ -2085,22 +2085,19 @@ namespace tinyxml2 {
         }
 
 //    FILE* fp = callfopen( filename, "w" );
-        PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFileC(filename);
-        auto openOutputStreamObject = ScopedLocalRef<jobject>(getEnv(),
-                                                              PathnameFileSystemProviderNative::getPathnameFileSystemNative()
-                                                                      .openOutputStreamC(filename));
-        auto outputStream = RandomAccessIONative(openOutputStreamObject.get());
+        PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFile(filename);
+        auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename);
 //    if ( !fp ) {
 //        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename );
 //        return _errorID;
 //    }
-        if (!outputStream.isValid()) {
+        if (outputStream == nullptr) {
             SetError(XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename);
             return _errorID;
         }
-        SaveFile(&outputStream, compact);
+        SaveFile(outputStream.get(), compact);
 //    fclose( fp );
-        outputStream.close();
+        outputStream->close();
         return _errorID;
     }
 
