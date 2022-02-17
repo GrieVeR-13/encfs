@@ -41,8 +41,7 @@
 #include "Mutex.h"
 #include "NameIO.h"
 #include "easylogging++.h"
-#include "filesystem/PathnameFileSystemProviderNative.h"
-#include "Exception.h"
+#include "filesystem/PathnameFileSystemNativeStdio.h"
 
 using namespace std;
 
@@ -186,13 +185,13 @@ bool RenameOp::apply() {
       VLOG(1) << "renaming " << last->oldCName << " -> " << last->newCName;
 
       struct stat st;
-      bool preserve_mtime = ::stat(last->oldCName.c_str(), &st) == 0;
+      bool preserve_mtime = pathnameFileSystem::stat(last->oldCName.c_str(), &st) == 0;
 
       // internal node rename..
       dn->renameNode(last->oldPName.c_str(), last->newPName.c_str());
 
       // rename on disk..
-      if (::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
+      if (pathnameFileSystem::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
         int eno = errno;
         RLOG(WARNING) << "Error renaming " << last->oldCName << ": "
                       << strerror(eno);
@@ -530,8 +529,7 @@ int DirNode::mkdir(const char *plaintextPath, mode_t mode, uid_t uid,
     }
   }
 
-//  int res = ::mkdir(cyName.c_str(), mode);
-  int res = PathnameFileSystemProviderNative::getPathnameFileSystemNative().newGroup(cyName, false);
+  int res = pathnameFileSystem::mkdir(cyName.c_str(), mode);
 
   if (res == -1) {
     int eno = errno;
