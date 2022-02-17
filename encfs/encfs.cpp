@@ -53,6 +53,7 @@
 #include "FileNode.h"
 #include "FileUtils.h"
 #include "FuseEds.h"
+#include "filesystem/PathnameFileSystemNativeStdio.h"
 
 #define ESUCCESS 0
 
@@ -206,7 +207,7 @@ int _do_getattr(FileNode *fnode, struct stat *stbuf) {
       // determine plaintext link size..  Easiest to read and decrypt..
       std::vector<char> buf(stbuf->st_size + 1, '\0');
 
-      res = ::readlink(fnode->cipherName(), buf.data(), stbuf->st_size);
+      res = pathnameFileSystem::readlink(fnode->cipherName(), buf.data(), stbuf->st_size);
       if (res >= 0) {
         // other functions expect c-strings to be null-terminated, which
         // readlink doesn't provide
@@ -413,7 +414,7 @@ int _do_readlink(EncFS_Context *ctx, const string &cyName, char *buf,
     return res;
   }
 
-  res = ::readlink(cyName.c_str(), buf, size - 1);
+  res = pathnameFileSystem::readlink(cyName.c_str(), buf, size - 1);
 
   if (res == -1) {
     return -errno;
@@ -480,7 +481,7 @@ int encfs_symlink(const char *to, const char *from) {
         return -EPERM;
       }
     }
-    res = ::symlink(toCName.c_str(), fromCName.c_str());
+    res = pathnameFileSystem::symlink(toCName.c_str(), fromCName.c_str());
     if (olduid >= 0) {
       if(setfsuid(olduid) == -1) {
         int eno = errno;
@@ -810,7 +811,7 @@ int encfs_setxattr(const char *path, const char *name, const char *value,
 #else
 int _do_setxattr(EncFS_Context *, const string &cyName, const char *name,
                  const char *value, size_t size, int flags) {
-  return ::lsetxattr(cyName.c_str(), name, value, size, flags);
+  return pathnameFileSystem::lsetxattr(cyName.c_str(), name, value, size, flags);
 }
 int encfs_setxattr(const char *path, const char *name, const char *value,
                    size_t size, int flags) {
@@ -838,7 +839,7 @@ int encfs_getxattr(const char *path, const char *name, char *value, size_t size,
 #else
 int _do_getxattr(EncFS_Context *, const string &cyName, const char *name,
                  void *value, size_t size) {
-  return ::lgetxattr(cyName.c_str(), name, value, size);
+  return pathnameFileSystem::lgetxattr(cyName.c_str(), name, value, size);
 }
 int encfs_getxattr(const char *path, const char *name, char *value,
                    size_t size) {
