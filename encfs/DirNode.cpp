@@ -203,7 +203,7 @@ bool RenameOp::apply() {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        ::utime(last->newCName.c_str(), &ut);
+        pathnameFileSystem::utime(last->newCName.c_str(), &ut);
       }
 
       ++last;
@@ -618,7 +618,7 @@ int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        ::utime(toCName.c_str(), &ut);
+        pathnameFileSystem::utime(toCName.c_str(), &ut);
       }
     }
   } catch (encfs::Error &err) {
@@ -649,7 +649,7 @@ int DirNode::link(const char *to, const char *from) {
   if (fsConfig->config->externalIVChaining) {
     VLOG(1) << "hard links not supported with external IV chaining!";
   } else {
-    res = ::link(toCName.c_str(), fromCName.c_str());
+    res = pathnameFileSystem::link(toCName.c_str(), fromCName.c_str());
     if (res == -1) {
       res = -errno;
     } else {
@@ -771,7 +771,7 @@ int DirNode::unlink(const char *plaintextName) {
 
   int res = 0;
   string fullName = rootDir + cyName;
-  res = ::unlink(fullName.c_str());
+  res = pathnameFileSystem::unlink(fullName.c_str());
   if (res == -1) {
     res = -errno;
     VLOG(1) << "unlink error: " << strerror(-res);
