@@ -2483,7 +2483,7 @@ namespace tinyxml2
     {
         if ( _fp ) {
 //            fputc ( ch, _fp);
-            _fp->write(reinterpret_cast<const uint8_t *>(&ch), 1); //todoe
+            _fp->write(reinterpret_cast<const uint8_t *>(&ch), 1);
         }
         else {
             char* p = _buffer.PushArr( sizeof(char) ) - 1;   // back up over the null terminator.
