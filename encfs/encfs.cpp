@@ -777,7 +777,7 @@ int encfs_statfs(const char *path, struct statvfs *st) {
     string cyName = ctx->rootCipherDir;
 
     VLOG(1) << "doing statfs of " << cyName;
-    res = statvfs(cyName.c_str(), st);
+    res = pathnameFileSystem::statvfs(cyName.c_str(), st);
     if (res == 0) {
       // adjust maximum name length..
       st->f_namemax = 6 * (st->f_namemax - 2) / 8;  // approx..
