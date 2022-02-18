@@ -45,6 +45,7 @@
 #include "config.h"
 #include "i18n.h"
 #include "intl/gettext.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX 4096
@@ -518,7 +519,7 @@ static int traverseDirs(const std::shared_ptr<EncFS_Root> &rootInfo,
         rootInfo->root->lookupNode(volumeDir.c_str(), "encfsctl");
     if (dirNode->getAttr(&st)) return EXIT_FAILURE;
 
-    mkdir(destDir.c_str(), st.st_mode);
+    pathnameFileSystem::mkdir(destDir.c_str(), st.st_mode);
   }
 
   // show files in directory
@@ -534,7 +535,7 @@ static int traverseDirs(const std::shared_ptr<EncFS_Root> &rootInfo,
 
         int r = EXIT_SUCCESS;
         struct stat stBuf;
-        if (!lstat(cpath.c_str(), &stBuf)) {
+        if (!pathnameFileSystem::lstat(cpath.c_str(), &stBuf)) {
           if (S_ISDIR(stBuf.st_mode)) {
             traverseDirs(rootInfo, (plainPath + '/').c_str(), destName + '/');
           } else if (S_ISLNK(stBuf.st_mode)) {

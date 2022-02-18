@@ -185,13 +185,13 @@ bool RenameOp::apply() {
       VLOG(1) << "renaming " << last->oldCName << " -> " << last->newCName;
 
       struct stat st;
-      bool preserve_mtime = ::stat(last->oldCName.c_str(), &st) == 0;
+      bool preserve_mtime = pathnameFileSystem::stat(last->oldCName.c_str(), &st) == 0;
 
       // internal node rename..
       dn->renameNode(last->oldPName.c_str(), last->newPName.c_str());
 
       // rename on disk..
-      if (::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
+      if (pathnameFileSystem::rename(last->oldCName.c_str(), last->newCName.c_str()) == -1) {
         int eno = errno;
         RLOG(WARNING) << "Error renaming " << last->oldCName << ": "
                       << strerror(eno);
@@ -203,7 +203,7 @@ bool RenameOp::apply() {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        ::utime(last->newCName.c_str(), &ut);
+        pathnameFileSystem::utime(last->newCName.c_str(), &ut);
       }
 
       ++last;
@@ -234,7 +234,7 @@ void RenameOp::undo() {
 
     VLOG(1) << "undo: renaming " << it->newCName << " -> " << it->oldCName;
 
-    ::rename(it->newCName.c_str(), it->oldCName.c_str());
+    pathnameFileSystem::rename(it->newCName.c_str(), it->oldCName.c_str());
     try {
       dn->renameNode(it->newPName.c_str(), it->oldPName.c_str(), false);
     } catch (encfs::Error &err) {
@@ -587,10 +587,10 @@ int DirNode::_rename(const char *fromPlaintext, const char *toPlaintext) {
   int res = 0;
   try {
     struct stat st;
-    bool preserve_mtime = ::stat(fromCName.c_str(), &st) == 0;
+    bool preserve_mtime = pathnameFileSystem::stat(fromCName.c_str(), &st) == 0;
 
     renameNode(fromPlaintext, toPlaintext);
-    res = ::rename(fromCName.c_str(), toCName.c_str());
+    res = pathnameFileSystem::rename(fromCName.c_str(), toCName.c_str());
 
     if (res == -1) {
       // undo
@@ -618,7 +618,7 @@ int DirNode::_rename(const char *fromPlaintext, const char *toPlaintext) {
         struct utimbuf ut;
         ut.actime = st.st_atime;
         ut.modtime = st.st_mtime;
-        ::utime(toCName.c_str(), &ut);
+        pathnameFileSystem::utime(toCName.c_str(), &ut);
       }
     }
   } catch (encfs::Error &err) {
@@ -771,7 +771,7 @@ int DirNode::_unlink(const char *plaintextName) {
 
   int res = 0;
   string fullName = rootDir + cyName;
-  res = ::unlink(fullName.c_str());
+  res = pathnameFileSystem::unlink(fullName.c_str());
   if (res == -1) {
     res = -errno;
     VLOG(1) << "unlink error: " << strerror(-res);

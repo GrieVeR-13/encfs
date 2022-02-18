@@ -178,7 +178,7 @@ int FileNode::mknod(mode_t mode, dev_t rdev, uid_t uid, gid_t gid) {
    * were a create method (advised to have)
    */
   if (S_ISREG(mode)) {
-    res = ::open(_cname.c_str(), O_CREAT | O_EXCL | O_WRONLY, mode);
+    res = pathnameFileSystem::open(_cname.c_str(), O_CREAT | O_EXCL | O_WRONLY, mode);
     if (res >= 0) {
       res = ::close(res);
     }

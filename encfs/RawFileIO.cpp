@@ -103,7 +103,7 @@ static int open_readonly_workaround(const char *path, int flags) {
   if (pathnameFileSystem::lstat(path, &stbuf) != -1) {
     // make sure user has read/write permission..
     if (chmod(path, stbuf.st_mode | 0600) != -1) {
-      fd = ::open(path, flags);
+      fd = pathnameFileSystem::open(path, flags);
       chmod(path, stbuf.st_mode);
     }
   }
@@ -138,7 +138,7 @@ int RawFileIO::open(int flags) {
 #endif
 
   int eno = 0;
-  int newFd = ::open(name.c_str(), finalFlags);
+  int newFd = pathnameFileSystem::open(name.c_str(), finalFlags);
   if (newFd < 0) {
     eno = errno;
   }

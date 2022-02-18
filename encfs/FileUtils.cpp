@@ -131,12 +131,12 @@ EncFS_Root::~EncFS_Root() = default;
 
 bool fileExists(const char *fileName) {
   struct stat buf;
-  return ::lstat(fileName, &buf) == 0;
+  return pathnameFileSystem::lstat(fileName, &buf) == 0;
 }
 
 bool isDirectory(const char *fileName) {
   struct stat buf;
-  if (::lstat(fileName, &buf) == 0) {
+  if (pathnameFileSystem::lstat(fileName, &buf) == 0) {
     return S_ISDIR(buf.st_mode);
   }
   return false;
@@ -187,7 +187,7 @@ bool userAllowMkdir(int promptno, const char *path, mode_t mode) {
   res = fgets(answer, sizeof(answer), stdin);
 
   if (res != nullptr && toupper(answer[0]) == 'Y') {
-    int result = ::mkdir(path, mode);
+    int result = pathnameFileSystem::mkdir(path, mode);
     if (result < 0) {
       perror(_("Unable to create directory: "));
       return false;
