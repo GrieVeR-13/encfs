@@ -445,7 +445,7 @@ static int copyLink(const struct stat &stBuf,
                     const std::shared_ptr<EncFS_Root> &rootInfo,
                     const string &cpath, const string &destName) {
   std::vector<char> buf(stBuf.st_size + 1, '\0');
-  int res = ::readlink(cpath.c_str(), buf.data(), stBuf.st_size);
+  int res = pathnameFileSystem::readlink(cpath.c_str(), buf.data(), stBuf.st_size);
   if (res == -1) {
     cerr << "unable to readlink of " << cpath << "\n";
     return EXIT_FAILURE;
@@ -454,7 +454,7 @@ static int copyLink(const struct stat &stBuf,
   buf[res] = '\0';
   string decodedLink = rootInfo->root->plainPath(buf.data());
 
-  res = ::symlink(decodedLink.c_str(), destName.c_str());
+  res = pathnameFileSystem::symlink(decodedLink.c_str(), destName.c_str());
   if (res == -1) {
     cerr << "unable to create symlink for " << cpath << " to " << decodedLink
          << "\n";
@@ -480,11 +480,11 @@ static int copyContents(const std::shared_ptr<EncFS_Root> &rootInfo,
       string d = rootInfo->root->cipherPath(encfsName);
       char linkContents[PATH_MAX + 2];
 
-      if (readlink(d.c_str(), linkContents, PATH_MAX + 1) <= 0) {
+      if (pathnameFileSystem::readlink(d.c_str(), linkContents, PATH_MAX + 1) <= 0) {
         cerr << "unable to read link " << encfsName << "\n";
         return EXIT_FAILURE;
       }
-      if (symlink(rootInfo->root->plainPath(linkContents).c_str(),
+      if (pathnameFileSystem::symlink(rootInfo->root->plainPath(linkContents).c_str(),
                   targetName) != 0) {
         cerr << "unable to create symlink " << targetName << "\n";
         return EXIT_FAILURE;

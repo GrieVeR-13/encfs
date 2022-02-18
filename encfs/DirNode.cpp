@@ -649,7 +649,7 @@ int DirNode::_link(const char *to, const char *from) {
   if (fsConfig->config->externalIVChaining) {
     VLOG(1) << "hard links not supported with external IV chaining!";
   } else {
-    res = ::link(toCName.c_str(), fromCName.c_str());
+    res = pathnameFileSystem::link(toCName.c_str(), fromCName.c_str());
     if (res == -1) {
       res = -errno;
     } else {

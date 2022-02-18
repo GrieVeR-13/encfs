@@ -102,9 +102,9 @@ static int open_readonly_workaround(const char *path, int flags) {
   memset(&stbuf, 0, sizeof(struct stat));
   if (pathnameFileSystem::lstat(path, &stbuf) != -1) {
     // make sure user has read/write permission..
-    if (chmod(path, stbuf.st_mode | 0600) != -1) {
+    if (pathnameFileSystem::chmod(path, stbuf.st_mode | 0600) != -1) {
       fd = pathnameFileSystem::open(path, flags);
-      chmod(path, stbuf.st_mode);
+      pathnameFileSystem::chmod(path, stbuf.st_mode);
     }
   }
   return fd;
