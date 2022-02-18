@@ -33,7 +33,7 @@ distribution.
 #endif
 
 #include "filesystem/PathnameFileSystemProviderNative.h"
-#include "filesystem/RandomAccessIONativeStream.h"
+#include "Exception.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
 // Microsoft Visual Studio, version 2005 and higher. Not WinCE.
@@ -2256,19 +2256,26 @@ namespace tinyxml2
         }
 
 //    FILE* fp = callfopen( filename, "w" );
-        PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFile(filename);
-        auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename);
-//    if ( !fp ) {
-//        SetError( XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename );
-//        return _errorID;
-//    }
-        if (outputStream == nullptr) {
+
+        try {
+            PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFile(filename); //todoe new file?
+            auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename, false);
+            //    if ( !fp ) {
+            if (outputStream == nullptr) {
+                SetError(XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename);
+                return _errorID;
+            }
+
+            SaveFile(outputStream.get(), compact);
+//    fclose( fp );
+            outputStream->close();
+        } catch (util::Exception &e) {
             SetError(XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename);
             return _errorID;
+
         }
-        SaveFile(outputStream.get(), compact);
-//    fclose( fp );
-        outputStream->close();
+
+
         return _errorID;
     }
 
