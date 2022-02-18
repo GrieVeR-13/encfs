@@ -56,8 +56,8 @@ bool ConfigReader::load(const char *fileName) {
 
   auto *buf = new char[size];
 
-  int res = ::read(fd, buf, size);
-  close(fd);
+  int res = pathnameFileSystem::read(fd, buf, size);
+  pathnameFileSystem::close(fd);
 
   if (res != size) {
     RLOG(WARNING) << "Partial read of config file, expecting " << size
@@ -100,8 +100,8 @@ bool ConfigReader::save(const char *fileName) const {
 
   int fd = pathnameFileSystem::open(fileName, O_RDWR | O_CREAT, 0640);
   if (fd >= 0) {
-    int retVal = ::write(fd, out.buffer(), out.size());
-    close(fd);
+    int retVal = pathnameFileSystem::write(fd, out.buffer(), out.size());
+    pathnameFileSystem::close(fd);
     if (retVal != out.size()) {
       RLOG(ERROR) << "Error writing to config file " << fileName;
       return false;

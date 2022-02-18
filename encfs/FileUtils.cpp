@@ -1525,8 +1525,8 @@ CipherKey EncFSConfig::getUserKey(const std::string &passProg,
   pid = fork();
   if (pid == -1) {
     perror(_("Internal error: fork() failed"));
-    close(fds[0]);
-    close(fds[1]);
+    pathnameFileSystem::close(fds[0]);
+    pathnameFileSystem::close(fds[1]);
     return result;
   }
 
@@ -1538,12 +1538,12 @@ CipherKey EncFSConfig::getUserKey(const std::string &passProg,
     argv[3] = nullptr;
 
     // child process.. run the command and send output to fds[0]
-    close(fds[1]);  // we don't use the other half..
+    pathnameFileSystem::close(fds[1]);  // we don't use the other half..
 
     // make a copy of stdout and stderr descriptors, and set an environment
     // variable telling where to find them, in case a child wants it..
-    int stdOutCopy = dup(STDOUT_FILENO);
-    int stdErrCopy = dup(STDERR_FILENO);
+    int stdOutCopy = pathnameFileSystem::dup(STDOUT_FILENO);
+    int stdErrCopy = pathnameFileSystem::dup(STDERR_FILENO);
     // replace STDOUT with our socket, which we'll used to receive the
     // password..
     dup2(fds[0], STDOUT_FILENO);
@@ -1569,9 +1569,9 @@ CipherKey EncFSConfig::getUserKey(const std::string &passProg,
     exit(1);
   }
 
-  close(fds[0]);
+  pathnameFileSystem::close(fds[0]);
   string password = readPassword(fds[1]);
-  close(fds[1]);
+  pathnameFileSystem::close(fds[1]);
 
   waitpid(pid, nullptr, 0);
 

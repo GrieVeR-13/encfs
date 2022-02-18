@@ -71,11 +71,11 @@ RawFileIO::~RawFileIO() {
   swap(_oldfd, oldfd);
 
   if (_oldfd != -1) {
-    close(_oldfd);
+    pathnameFileSystem::close(_oldfd);
   }
 
   if (_fd != -1) {
-    close(_fd);
+    pathnameFileSystem::close(_fd);
   }
 }
 
@@ -235,7 +235,7 @@ ssize_t RawFileIO::write(const IORequest &req) {
    */
   // while ((bytes != 0) && retrys > 0) {
   while (bytes != 0) {
-    ssize_t writeSize = ::pwrite(fd, buf, bytes, offset);
+    ssize_t writeSize = pathnameFileSystem::pwrite(fd, buf, bytes, offset);
 
     if (writeSize < 0) {
       int eno = errno;
@@ -276,7 +276,7 @@ int RawFileIO::truncate(off_t size) {
   int res;
 
   if (fd >= 0 && canWrite) {
-    res = ::ftruncate(fd, size);
+    res = pathnameFileSystem::ftruncate(fd, size);
   } else {
     res = ::truncate(name.c_str(), size);
   }
@@ -295,9 +295,9 @@ int RawFileIO::truncate(off_t size) {
 
   if (fd >= 0 && canWrite) {
 #if defined(HAVE_FDATASYNC)
-    ::fdatasync(fd);
+    pathnameFileSystem::fdatasync(fd);
 #else
-    ::fsync(fd);
+    pathnameFileSystem::fsync(fd);
 #endif
   }
 

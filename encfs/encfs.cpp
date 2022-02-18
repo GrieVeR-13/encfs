@@ -682,11 +682,11 @@ int _do_flush(FileNode *fnode) {
   int res = fnode->open(O_RDONLY);
   if (res >= 0) {
     int fh = res;
-    int nfh = dup(fh);
+    int nfh = pathnameFileSystem::dup(fh);
     if (nfh == -1) {
       return -errno;
     }
-    res = close(nfh);
+    res = pathnameFileSystem::close(nfh);
     if (res == -1) {
       return -errno;
     }
@@ -796,7 +796,7 @@ int encfs_statfs(const char *path, struct statvfs *st) {
 int _do_setxattr(EncFS_Context *, const string &cyName, const char *name,
                  const char *value, size_t size, uint32_t pos) {
   int options = XATTR_NOFOLLOW;
-  return ::setxattr(cyName.c_str(), name, value, size, pos, options);
+  return pathnameFileSystem::setxattr(cyName.c_str(), name, value, size, pos, options);
 }
 int encfs_setxattr(const char *path, const char *name, const char *value,
                    size_t size, int flags, uint32_t position) {
@@ -811,7 +811,7 @@ int encfs_setxattr(const char *path, const char *name, const char *value,
 #else
 int _do_setxattr(EncFS_Context *, const string &cyName, const char *name,
                  const char *value, size_t size, int flags) {
-  return ::lsetxattr(cyName.c_str(), name, value, size, flags);
+  return pathnameFileSystem::lsetxattr(cyName.c_str(), name, value, size, flags);
 }
 int encfs_setxattr(const char *path, const char *name, const char *value,
                    size_t size, int flags) {
@@ -828,7 +828,7 @@ int encfs_setxattr(const char *path, const char *name, const char *value,
 int _do_getxattr(EncFS_Context *, const string &cyName, const char *name,
                  void *value, size_t size, uint32_t pos) {
   int options = XATTR_NOFOLLOW;
-  return ::getxattr(cyName.c_str(), name, value, size, pos, options);
+  return pathnameFileSystem::getxattr(cyName.c_str(), name, value, size, pos, options);
 }
 int encfs_getxattr(const char *path, const char *name, char *value, size_t size,
                    uint32_t position) {
@@ -853,9 +853,9 @@ int _do_listxattr(EncFS_Context *, const string &cyName, char *list,
                   size_t size) {
 #ifdef XATTR_ADD_OPT
   int options = XATTR_NOFOLLOW;
-  int res = ::listxattr(cyName.c_str(), list, size, options);
+  int res = pathnameFileSystem::listxattr(cyName.c_str(), list, size, options);
 #else
-  int res = ::llistxattr(cyName.c_str(), list, size);
+  int res = pathnameFileSystem::llistxattr(cyName.c_str(), list, size);
 #endif
   return (res == -1) ? -errno : res;
 }
@@ -868,9 +868,9 @@ int encfs_listxattr(const char *path, char *list, size_t size) {
 int _do_removexattr(EncFS_Context *, const string &cyName, const char *name) {
 #ifdef XATTR_ADD_OPT
   int options = XATTR_NOFOLLOW;
-  int res = ::removexattr(cyName.c_str(), name, options);
+  int res = pathnameFileSystem::removexattr(cyName.c_str(), name, options);
 #else
-  int res = ::lremovexattr(cyName.c_str(), name);
+  int res = pathnameFileSystem::lremovexattr(cyName.c_str(), name);
 #endif
   return (res == -1) ? -errno : res;
 }

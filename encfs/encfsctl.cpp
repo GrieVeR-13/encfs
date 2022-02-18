@@ -417,7 +417,7 @@ class WriteOutput {
 
  public:
   WriteOutput(int fd) { _fd = fd; }
-  ~WriteOutput() { close(_fd); }
+  ~WriteOutput() { pathnameFileSystem::close(_fd); }
 
   int operator()(const void *buf, int count) {
     return (int)write(_fd, buf, count);

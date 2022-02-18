@@ -180,12 +180,12 @@ int FileNode::mknod(mode_t mode, dev_t rdev, uid_t uid, gid_t gid) {
   if (S_ISREG(mode)) {
     res = pathnameFileSystem::open(_cname.c_str(), O_CREAT | O_EXCL | O_WRONLY, mode);
     if (res >= 0) {
-      res = ::close(res);
+      res = pathnameFileSystem::close(res);
     }
   } else if (S_ISFIFO(mode)) {
-    res = ::mkfifo(_cname.c_str(), mode);
+    res = pathnameFileSystem::mkfifo(_cname.c_str(), mode);
   } else {
-    res = ::mknod(_cname.c_str(), mode, rdev);
+    res = pathnameFileSystem::mknod(_cname.c_str(), mode, rdev);
   }
 
   if (res == -1) {
@@ -276,9 +276,9 @@ int FileNode::sync(bool datasync) {
     int res = -EIO;
 #if defined(HAVE_FDATASYNC)
     if (datasync) {
-      res = fdatasync(fh);
+      res = pathnameFileSystem::fdatasync(fh);
     } else {
-      res = fsync(fh);
+      res = pathnameFileSystem::fsync(fh);
     }
 #else
     (void)datasync;
