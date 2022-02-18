@@ -32,7 +32,7 @@
 #include "Error.h"
 #include "Interface.h"
 #include "base64.h"
-#include "filesystem/RandomAccessIONativeStream.h"
+#include "filesystem/InputStreamNativeIStream.h"
 #include "filesystem/PathnameFileSystemProviderNative.h"
 #include "Exception.h"
 
@@ -211,7 +211,7 @@ bool XmlReader::load(const char *fileName) {
   try {
     auto randomAccessReader = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openRandomAccessReader(fileName);
 
-    pathnameFileSystem::InputStreamNativeIStream in(randomAccessReader.get());
+    InputStreamNativeIStream in(randomAccessReader);
 
     if (!in) {
       return false;
@@ -220,7 +220,6 @@ bool XmlReader::load(const char *fileName) {
     std::ostringstream fileContent;
     fileContent << in.rdbuf();
     auto err = pd->doc->Parse(fileContent.str().c_str());
-    randomAccessReader->close();
     return err == tinyxml2::XML_SUCCESS;
   }
   catch(util::Exception &e) {

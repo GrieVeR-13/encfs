@@ -113,7 +113,7 @@ struct ConfigInfo {
   int defaultSubVersion;
 } ConfigFileMapping[] = {
     // current format
-    {"encfs6.xml", Config_V6, "ENCFS6_CONFIG", readV6Config, writeV6Config, //todoe
+    {".encfs6.xml", Config_V6, "ENCFS6_CONFIG", readV6Config, writeV6Config,
      V6SubVersion, 0},
     // backward compatible support for older versions
     {".encfs5", Config_V5, "ENCFS5_CONFIG", readV5Config, writeV5Config,
@@ -1588,7 +1588,7 @@ CipherKey EncFSConfig::getUserKey(std::string &password) {
   CipherKey result = makeKey(password.c_str(), password.length());
 
   // clear buffer..
-  password.assign(password.length(), '\0'); //todoe cryfs
+  password.assign(password.length(), '\0'); //todoe cryfs assign
 
   return result;
 }

@@ -620,7 +620,7 @@ void *encfs_init(fuse_conn_info *conn) {
   auto *ctx = (EncFS_Context *)fuse_get_context()->private_data;
 
   // set fuse connection options
-//  conn->async_read = 1u; //todoe
+//  conn->async_read = 1u; //todoe and todoe clen all project git
 
 #ifdef __CYGWIN__
   // WinFsp needs this to partially handle read-only FS
@@ -825,7 +825,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
       RLOG(ERROR) << "Internal error: Caught unexpected exception";
     }
 
-    if (ctx->args->idleTimeout > 0) { //todoe clean
+    if (ctx->args->idleTimeout > 0) { //todoe clean close fs
       ctx->running = false;
       // wake up the thread if it is waiting..
       VLOG(1) << "waking up monitoring thread";

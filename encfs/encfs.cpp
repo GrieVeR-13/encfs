@@ -609,7 +609,7 @@ int encfs_utime(const char *path, struct utimbuf *buf) {
 int _do_utimens(EncFS_Context *, const string &cyName,
                 const struct timespec ts[2]) {
 #ifdef HAVE_UTIMENSAT
-  int res = utimensat(AT_FDCWD, cyName.c_str(), ts, AT_SYMLINK_NOFOLLOW);
+  int res = pathnameFileSystem::utimensat(AT_FDCWD, cyName.c_str(), ts, AT_SYMLINK_NOFOLLOW);
 #else
   struct timeval tv[2];
   tv[0].tv_sec = ts[0].tv_sec;
