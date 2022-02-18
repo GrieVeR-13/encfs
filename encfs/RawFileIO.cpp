@@ -94,9 +94,11 @@ Interface RawFileIO::interface() const { return RawFileIO_iface; }
 
     Sets errno when -1 is returned.
 */
+
 static int open_readonly_workaround(const char *path, int flags) {
   int fd = -1;
   struct stat stbuf;
+  using namespace pathnameFileSystem;
   memset(&stbuf, 0, sizeof(struct stat));
   if (pathnameFileSystem::lstat(path, &stbuf) != -1) {
     // make sure user has read/write permission..

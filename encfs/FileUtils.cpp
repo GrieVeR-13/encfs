@@ -187,7 +187,7 @@ bool userAllowMkdir(int promptno, const char *path, mode_t mode) {
   res = fgets(answer, sizeof(answer), stdin);
 
   if (res != nullptr && toupper(answer[0]) == 'Y') {
-    int result = pathnameFileSystem::mkdir(path, mode);
+    int result = ::mkdir(path, mode);
     if (result < 0) {
       perror(_("Unable to create directory: "));
       return false;
