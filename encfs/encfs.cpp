@@ -395,7 +395,7 @@ int encfs_unlink(const char *path) {
 }
 
 int _do_rmdir(EncFS_Context *, const string &cipherPath) {
-  return rmdir(cipherPath.c_str());
+  return pathnameFileSystem::rmdir(cipherPath.c_str());
 }
 
 int encfs_rmdir(const char *path) {
