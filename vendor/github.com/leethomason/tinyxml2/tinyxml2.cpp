@@ -2259,7 +2259,7 @@ namespace tinyxml2
 
         try {
             PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFile(filename); //todoe new file?
-            auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename, false);
+            auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename);
             //    if ( !fp ) {
             if (outputStream == nullptr) {
                 SetError(XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename);

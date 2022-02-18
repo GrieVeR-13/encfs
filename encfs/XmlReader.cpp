@@ -209,8 +209,7 @@ bool XmlReader::load(const char *fileName) {
 
 //  std::ifstream in(fileName);
   try {
-    auto randomAccessReader = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openRandomAccessReader(fileName,
-                                                                                                                     false);
+    auto randomAccessReader = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openRandomAccessReader(fileName);
 
     pathnameFileSystem::InputStreamNativeIStream in(randomAccessReader.get());
 
