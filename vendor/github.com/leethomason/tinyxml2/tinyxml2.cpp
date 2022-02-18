@@ -2159,7 +2159,7 @@ namespace tinyxml2
     }
 
 
-    XMLError XMLDocument::LoadFile( const char* filename )
+    XMLError XMLDocument::LoadFile( const char* filename ) //not used
     {
         if ( !filename ) {
                     TIXMLASSERT( false );
@@ -2258,8 +2258,12 @@ namespace tinyxml2
 //    FILE* fp = callfopen( filename, "w" );
 
         try {
-            PathnameFileSystemProviderNative::getPathnameFileSystemNative().newFile(filename); //todoe new file?
-            auto outputStream = PathnameFileSystemProviderNative::getPathnameFileSystemNative().openOutputStream(filename);
+            auto env = getEnv();
+            auto &pathnameFileSystemNative = PathnameFileSystemProviderNative::getPathnameFileSystemNative();
+            if (!pathnameFileSystemNative.exists(filename, env)) {
+                pathnameFileSystemNative.newFile(filename, env);
+            }
+            auto outputStream = pathnameFileSystemNative.openOutputStream(filename, env);
             //    if ( !fp ) {
             if (outputStream == nullptr) {
                 SetError(XML_ERROR_FILE_COULD_NOT_BE_OPENED, 0, "filename=%s", filename);
