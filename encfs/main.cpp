@@ -45,6 +45,7 @@
 #include "FuseEds.h"
 #include "i18n.h"
 #include "openssl.h"
+#include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 /* Arbitrary identifiers for long options that do
  * not have a short version */
@@ -646,7 +647,7 @@ void *encfs_init(fuse_conn_info *conn) {
 
   if (ctx->args->isDaemon && oldStderr >= 0) {
     VLOG(1) << "Closing stderr";
-    close(oldStderr);
+    pathnameFileSystem::close(oldStderr);
     oldStderr = -1;
   }
 
@@ -773,7 +774,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
     if (encfsArgs->isDaemon) {
       // keep around a pointer just in case we end up needing it to
       // report a fatal condition later (fuse_main exits unexpectedly)...
-      oldStderr = dup(STDERR_FILENO);
+      oldStderr = pathnameFileSystem::dup(STDERR_FILENO);
     }
 
     try {

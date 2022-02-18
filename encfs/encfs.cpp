@@ -679,7 +679,8 @@ int _do_flush(FileNode *fnode) {
      close the file.  However it is important to call close() for some
      underlying filesystems (like NFS).
   */
-  int res = fnode->open(O_RDONLY);
+  return fnode->sync(false);
+  /*int res = fnode->open(O_RDONLY);
   if (res >= 0) {
     int fh = res;
     int nfh = pathnameFileSystem::dup(fh);
@@ -692,7 +693,7 @@ int _do_flush(FileNode *fnode) {
     }
   }
 
-  return res;
+  return res;*/
 }
 
 // Called on each close() of a file descriptor
