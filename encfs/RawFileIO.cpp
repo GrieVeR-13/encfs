@@ -98,7 +98,6 @@ Interface RawFileIO::interface() const { return RawFileIO_iface; }
 static int open_readonly_workaround(const char *path, int flags) {
   int fd = -1;
   struct stat stbuf;
-  using namespace pathnameFileSystem;
   memset(&stbuf, 0, sizeof(struct stat));
   if (pathnameFileSystem::lstat(path, &stbuf) != -1) {
     // make sure user has read/write permission..
@@ -206,7 +205,7 @@ off_t RawFileIO::getSize() const {
 ssize_t RawFileIO::read(const IORequest &req) const {
   rAssert(fd >= 0);
 
-  ssize_t readSize = pread(fd, req.data, req.dataLen, req.offset);
+  ssize_t readSize = pathnameFileSystem::pread(fd, req.data, req.dataLen, req.offset);
 
   if (readSize < 0) {
     int eno = errno;
@@ -278,7 +277,7 @@ int RawFileIO::truncate(off_t size) {
   if (fd >= 0 && canWrite) {
     res = pathnameFileSystem::ftruncate(fd, size);
   } else {
-    res = ::truncate(name.c_str(), size);
+    res = pathnameFileSystem::truncate(name.c_str(), size);
   }
 
   if (res < 0) {
