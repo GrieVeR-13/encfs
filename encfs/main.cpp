@@ -654,6 +654,14 @@ void *encfs_init(fuse_conn_info *conn) {
   return (void *)ctx;
 }
 
+void encfs_destroy(void *private_data) {
+    auto *ctx = (EncFS_Context *)private_data;
+//    MemoryPool::destroyAll();
+//    openssl_shutdown(/*ctx->isThreaded*/true); //todo check multiple open/close
+
+    delete ctx;
+}
+
 FuseSession * encfs::main(int argc, char *argv[]) {
 #if defined(ENABLE_NLS) && defined(LOCALEDIR)
   setlocale(LC_ALL, "");
@@ -725,6 +733,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
   // encfs_oper.releasedir = encfs_releasedir;
   // encfs_oper.fsyncdir = encfs_fsyncdir;
   encfs_oper.init = encfs_init;
+  encfs_oper.destroy = encfs_destroy;
   // encfs_oper.access = encfs_access;
   encfs_oper.create = encfs_create;
   encfs_oper.ftruncate = encfs_ftruncate;
@@ -733,7 +742,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
   encfs_oper.utimens = encfs_utimens;
   // encfs_oper.bmap = encfs_bmap;
 
-  openssl_init(encfsArgs->isThreaded);
+  openssl_init(encfsArgs->isThreaded); //todo check multi thread
 
   // context is not a smart pointer because it will live for the life of
   // the filesystem.
@@ -825,7 +834,7 @@ FuseSession * encfs::main(int argc, char *argv[]) {
       RLOG(ERROR) << "Internal error: Caught unexpected exception";
     }
 
-    if (ctx->args->idleTimeout > 0) { //todoe clean close fs
+    if (ctx->args->idleTimeout > 0) {
       ctx->running = false;
       // wake up the thread if it is waiting..
       VLOG(1) << "waking up monitoring thread";

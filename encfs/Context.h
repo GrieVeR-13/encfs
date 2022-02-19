@@ -39,7 +39,7 @@ class FileNode;
 struct EncFS_Args;
 struct EncFS_Opts;
 
-struct EncFS_Root; //todoe
+struct EncFS_Root;
 
 class EncFS_Context {
  public:

@@ -127,7 +127,10 @@ struct ConfigInfo {
 
 EncFS_Root::EncFS_Root() = default;
 
-EncFS_Root::~EncFS_Root() = default;
+EncFS_Root::~EncFS_Root() {
+  auto rootDir = root->rootDirectory();
+  pathnameFileSystem::closePathnameFileSystem(rootDir.c_str());
+}
 
 bool fileExists(const char *fileName) {
   struct stat buf;
