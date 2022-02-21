@@ -620,7 +620,7 @@ void *encfs_init(fuse_conn_info *conn) {
   auto *ctx = (EncFS_Context *)fuse_get_context()->private_data;
 
   // set fuse connection options
-//  conn->async_read = 1u; //todoe and todoe clen all project git
+//  conn->async_read = 1u;
 
 #ifdef __CYGWIN__
   // WinFsp needs this to partially handle read-only FS

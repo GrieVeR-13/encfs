@@ -1591,7 +1591,7 @@ CipherKey EncFSConfig::getUserKey(std::string &password) {
   CipherKey result = makeKey(password.c_str(), password.length());
 
   // clear buffer..
-  password.assign(password.length(), '\0'); //todoe cryfs assign
+  password.assign(password.length(), '\0');
 
   return result;
 }
