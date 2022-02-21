@@ -94,7 +94,6 @@ Interface RawFileIO::interface() const { return RawFileIO_iface; }
 
     Sets errno when -1 is returned.
 */
-
 static int open_readonly_workaround(const char *path, int flags) {
   int fd = -1;
   struct stat stbuf;

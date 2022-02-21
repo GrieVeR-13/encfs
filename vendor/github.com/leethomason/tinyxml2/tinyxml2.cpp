@@ -36,7 +36,7 @@ distribution.
 #include "Exception.h"
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1400 ) && (!defined WINCE)
-// Microsoft Visual Studio, version 2005 and higher. Not WinCE.
+	// Microsoft Visual Studio, version 2005 and higher. Not WinCE.
 	/*int _snprintf_s(
 	   char *buffer,
 	   size_t sizeOfBuffer,
@@ -62,7 +62,7 @@ distribution.
 	#define TIXML_VSCPRINTF	_vscprintf
 	#define TIXML_SSCANF	sscanf_s
 #elif defined _MSC_VER
-// Microsoft Visual Studio 2003 and earlier or WinCE
+	// Microsoft Visual Studio 2003 and earlier or WinCE
 	#define TIXML_SNPRINTF	_snprintf
 	#define TIXML_VSNPRINTF _vsnprintf
 	#define TIXML_SSCANF	sscanf
@@ -90,17 +90,17 @@ distribution.
 		}
 	#endif
 #else
-// GCC version 3 and higher
-//#warning( "Using sn* functions." )
-#define TIXML_SNPRINTF	snprintf
-#define TIXML_VSNPRINTF	vsnprintf
-static inline int TIXML_VSCPRINTF( const char* format, va_list va )
-{
-    int len = vsnprintf( 0, 0, format, va );
-            TIXMLASSERT( len >= 0 );
-    return len;
-}
-#define TIXML_SSCANF   sscanf
+	// GCC version 3 and higher
+	//#warning( "Using sn* functions." )
+	#define TIXML_SNPRINTF	snprintf
+	#define TIXML_VSNPRINTF	vsnprintf
+	static inline int TIXML_VSCPRINTF( const char* format, va_list va )
+	{
+		int len = vsnprintf( 0, 0, format, va );
+		TIXMLASSERT( len >= 0 );
+		return len;
+	}
+	#define TIXML_SSCANF   sscanf
 #endif
 
 

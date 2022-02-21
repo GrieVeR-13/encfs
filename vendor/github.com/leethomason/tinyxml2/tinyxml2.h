@@ -91,7 +91,6 @@ distribution.
 #       define TIXMLASSERT( x )           if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); }
 #   else
 #       include <assert.h>
-
 #       define TIXMLASSERT                assert
 #   endif
 #else

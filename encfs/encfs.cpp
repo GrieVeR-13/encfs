@@ -387,7 +387,7 @@ int encfs_unlink(const char *path) {
   try {
     // let DirNode handle it atomically so that it can handle race
     // conditions
-    res = FSRoot->_unlink(path);
+    res = FSRoot->unlink(path);
   } catch (encfs::Error &err) {
     RLOG(ERROR) << "error caught in unlink: " << err.what();
   }
@@ -522,7 +522,7 @@ int encfs_link(const char *to, const char *from) {
   }
 
   try {
-    res = FSRoot->_link(to, from);
+    res = FSRoot->link(to, from);
   } catch (encfs::Error &err) {
     RLOG(ERROR) << "error caught in link: " << err.what();
   }
@@ -543,7 +543,7 @@ int encfs_rename(const char *from, const char *to) {
   }
 
   try {
-    res = FSRoot->_rename(from, to);
+    res = FSRoot->rename(from, to);
   } catch (encfs::Error &err) {
     RLOG(ERROR) << "error caught in rename: " << err.what();
   }

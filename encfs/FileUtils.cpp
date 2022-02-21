@@ -69,7 +69,6 @@
 #include "filesystem/PathnameFileSystemNativeStdioDefine.h"
 
 using namespace std;
-
 using gnu::autosprintf;
 
 namespace encfs {

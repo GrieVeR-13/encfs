@@ -556,7 +556,7 @@ int DirNode::mkdir(const char *plaintextPath, mode_t mode, uid_t uid,
   return res;
 }
 
-int DirNode::_rename(const char *fromPlaintext, const char *toPlaintext) {
+int DirNode::rename(const char *fromPlaintext, const char *toPlaintext) {
   Lock _lock(mutex);
 
   string fromCName = rootDir + naming->encodePath(fromPlaintext);
@@ -634,7 +634,7 @@ int DirNode::_rename(const char *fromPlaintext, const char *toPlaintext) {
   return res;
 }
 
-int DirNode::_link(const char *to, const char *from) {
+int DirNode::link(const char *to, const char *from) {
   Lock _lock(mutex);
 
   string toCName = rootDir + naming->encodePath(to);
@@ -749,7 +749,7 @@ std::shared_ptr<FileNode> DirNode::openNode(const char *plainName,
   return std::shared_ptr<FileNode>();
 }
 
-int DirNode::_unlink(const char *plaintextName) {
+int DirNode::unlink(const char *plaintextName) {
   string cyName = naming->encodePath(plaintextName);
   VLOG(1) << "unlink " << cyName;
 
