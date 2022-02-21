@@ -295,6 +295,7 @@ set(SOURCE_FILES
   encfs/SSL_Cipher.cpp
   encfs/StreamNameIO.cpp
   encfs/XmlReader.cpp
+  encfs/encfsctl.cpp
 )
 add_library(encfs ${SOURCE_FILES})
 set_target_properties(encfs PROPERTIES
@@ -338,9 +339,9 @@ if(LINT AND CLANG_TIDY_EXE)
 #  set_target_properties(encfs-bin PROPERTIES CXX_CLANG_TIDY "${DO_CLANG_TIDY}")
 endif()
 
-add_executable (encfsctl encfs/encfsctl.cpp)
-target_link_libraries (encfsctl encfs)
-install (TARGETS encfsctl DESTINATION bin)
+#add_executable (encfsctl encfs/encfsctl.cpp)
+#target_link_libraries (encfsctl encfs)
+#install (TARGETS encfsctl DESTINATION bin)
 
 add_executable (makekey encfs/makeKey.cpp)
 target_link_libraries (makekey encfs)

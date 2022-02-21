@@ -15,6 +15,7 @@
  * more details.
  */
 
+#include "EncFsCtlMain.h"
 #include <fcntl.h>
 #include <getopt.h>
 #include <iostream>
@@ -732,7 +733,8 @@ static int ckpasswdAutomaticly(int argc, char **argv) {
   return do_chpasswd(true, false, true, argc, argv);
 }
 
-int main(int argc, char **argv) {
+
+int encfsctl::main(int argc, char **argv) {
   START_EASYLOGGINGPP(argc, argv);
   encfs::initLogging();
 
