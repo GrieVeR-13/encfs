@@ -83,7 +83,7 @@ struct CommandOpts {
     {"showKey", 1, 1, cmd_showKey, "(root dir)",
      // xgroup(usage)
      gettext_noop("  -- show key")},
-    {"passwd", 1, 1, chpasswd, "(root dir)",
+    {"passwd", 3, 3, chpasswd, "(root dir)",
      // xgroup(usage)
      gettext_noop("  -- change password for volume")},
     {"autopasswd", 1, 1, chpasswdAutomaticly, "(root dir)",
@@ -641,6 +641,8 @@ static int do_chpasswd(bool useStdin, bool annotate, bool checkOnly, int argc,
                        char **argv) {
   (void)argc;
   string rootDir = argv[1];
+  string oldPassword = argv[2];
+  string newPassword = argv[3];
   if (!checkDir(rootDir)) return EXIT_FAILURE;
 
   EncFSConfig *config = new EncFSConfig;
@@ -663,7 +665,8 @@ static int do_chpasswd(bool useStdin, bool annotate, bool checkOnly, int argc,
   // ask for existing password
   cout << _("Enter current Encfs password\n");
   if (annotate) cerr << "$PROMPT$ passwd" << endl;
-  CipherKey userKey = config->getUserKey(useStdin);
+//  CipherKey userKey = config->getUserKey(useStdin);
+  CipherKey userKey = config->getUserKey(oldPassword);
   if (!userKey) return EXIT_FAILURE;
 
   // decode volume key using user key -- at this point we detect an incorrect
@@ -686,11 +689,12 @@ static int do_chpasswd(bool useStdin, bool annotate, bool checkOnly, int argc,
   // reinitialize salt and iteration count
   config->kdfIterations = 0;  // generate new
 
-  if (useStdin) {
+  /*if (useStdin) {
     if (annotate) cerr << "$PROMPT$ new_passwd" << endl;
     userKey = config->getUserKey(true);
   } else
-    userKey = config->getNewUserKey();
+    userKey = config->getNewUserKey();*/
+  userKey = config->getUserKey(newPassword);
 
   // re-encode the volume key using the new user key and write it out..
   int result = EXIT_FAILURE;
@@ -753,7 +757,7 @@ int encfsctl::main(int argc, char **argv) {
   }
 
   // Skip over uninteresting args.
-  while (argc > 2 && *argv[1] == '-') {
+  while (argc > 4 && *argv[1] == '-') {
     VLOG(1) << "skipping arg " << argv[1];
     argc--;
     argv[1] = argv[0];
